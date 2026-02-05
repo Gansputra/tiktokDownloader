@@ -1,52 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>TikTok Downloader</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding: 40px;
-            background: #111;
-            color: white;
-        }
-        input {
-            padding: 10px;
-            width: 300px;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        video, img {
-            margin-top: 20px;
-            max-width: 400px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Tiktok Downloader by Gansputra</title>
+    <meta name="author" content="Gansputra">
+    <meta name="description" content="Tools download Tiktok gratis buatan Gansputra">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-6">
 
-<h1>TikTok Downloader</h1>
-<form method="POST">
-    <input type="text" name="url" placeholder="Masukkan link TikTok..." required>
-    <br>
-    <button type="submit">Preview</button>
-</form>
-{% if error %}
-<p>{{ error }}</p>
-{% endif %}
-{% if preview %}
-    <h3>{{ title }}</h3>
-    <video controls>
-        <source src="{{ preview }}" type="video/mp4">
-    </video>
-    <form action="/download" method="POST">
-        <input type="hidden" name="url" value="{{ original_url }}">
-        <br>
-        <button type="submit">Download</button>
-    </form>
-{% endif %}
+    <div class="max-w-lg w-full">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent mb-2">
+                TikTok Downloader
+            </h1>
+            <p class="text-slate-400">Download video tiktok dalam sekejap! :V</p>
+        </div>
 
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl mb-6">
+            <form method="POST" class="space-y-4">
+                <div class="relative">
+                    <input type="text" name="url" placeholder="Paste link TikTok di sini..." required
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all placeholder:text-slate-500">
+                </div>
+                <button type="submit" 
+                    class="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Preview Video
+                </button>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-xl text-center mb-6">
+            <i class="fa-solid fa-circle-exclamation mr-2"></i> {{ error }}
+        </div>
+        {% endif %}
+        {% if video %}
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                
+                <div class="relative group aspect-video overflow-hidden">
+                    <img src="{{ video.thumbnail }}" alt="Thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 flex items-center gap-2">
+                        <span class="bg-pink-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Preview Mode</span>
+                        <span class="bg-black/60 backdrop-blur-md text-white text-xs px-2 py-1 rounded-lg">
+                            <i class="fa-regular fa-clock mr-1"></i> {{ video.duration }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                            <div class="p-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-bold text-xl text-white line-clamp-1 mb-1">{{ video.title }}</h3>
+                                        
+                                        {% if video.author_url %}
+                                        <a href="{{ video.author_url }}" target="_blank" 
+                                        class="text-pink-500 font-medium text-sm flex items-center gap-1 hover:text-pink-400 hover:underline transition-all">
+                                            <i class="fa-solid fa-circle-check text-[10px]"></i> @{{ video.author }}
+                                        </a>
+                                        {% else %}
+                                        <p class="text-pink-500 font-medium text-sm flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-check text-[10px]"></i> @{{ video.author }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-slate-800/50 p-3 rounded-2xl text-center">
+                            <p class="text-slate-400 text-[10px] uppercase font-bold tracking-tighter">Views</p>
+                            <p class="text-white font-mono">{{ video.views }}</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-3 rounded-2xl text-center">
+                            <p class="text-slate-400 text-[10px] uppercase font-bold tracking-tighter">Likes</p>
+                            <p class="text-white font-mono">{{ video.likes }}</p>
+                        </div>
+                    </div>
+                    
+                    <form action="/download" method="POST">
+                        <input type="hidden" name="url" value="{{ video.original_url }}">
+                        <button type="submit" 
+                            class="w-full bg-white text-black hover:bg-pink-500 hover:text-white font-black py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 group shadow-xl">
+                            <i class="fa-solid fa-cloud-arrow-down text-xl group-hover:bounce"></i> 
+                            DOWNLOAD SEKARANG BOS
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        <footer class="mt-8 text-center text-slate-600 text-xs">
+        <div class="mt-8 pt-6 border-t border-white/10 text-center">
+            &copy; 2026 TikTok Downloader Project
+                <p class="text-xs text-gray-500">Made with ☕ & Python</p>
+                <p class="text-gray-400 text-sm mb-3">
+                    Developed with ❤️ by <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">Gansputra</span>
+                </p>
+                
+                <div class="flex justify-center gap-4">
+                    <a href="https://github.com/Gansputra" target="_blank" class="p-2 rounded-full bg-white/5 hover:bg-white/20 hover:text-pink-400 transition-all duration-300 transform hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    </a>
+
+                    <a href="https://instagram.com/gans.putra_" target="_blank" class="p-2 rounded-full bg-white/5 hover:bg-white/20 hover:text-pink-500 transition-all duration-300 transform hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 </body>
 </html>
+<script>
+    const video = document.getElementById('tiktokPreview');
+    const muteIcon = document.getElementById('muteIcon');
+
+    // Paksa play jika autoplay diblokir browser
+    window.addEventListener('load', () => {
+        video.play().catch(error => {
+            console.log("Autoplay dicegah browser, butuh interaksi user.");
+        });
+    });
+
+    function toggleMute() {
+        video.muted = !video.muted;
+        muteIcon.className = video.muted ? 'fa-solid fa-volume-xmark text-white' : 'fa-solid fa-volume-high text-white';
+    }
+</script>
